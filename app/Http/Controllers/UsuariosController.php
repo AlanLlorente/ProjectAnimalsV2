@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Usuarios;
+use \Validator;
 
 class UsuariosController extends Controller
 {
@@ -13,87 +15,264 @@ class UsuariosController extends Controller
      */
     public function index()
     {
-        return ('hola');
-    }
+        $listUsers = Usuarios::count();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        $json = $request->input('json', null);
-        $params = json_decode($json);
-        $paramsArray = json_decode($json, true);
-
-        $validator = Validator::make($paramsArray, [
-            'usuario' => 'required',
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'email:rfc,dns',
-            'telefono' => 'numeric',
-            'imagen' => 'image'
-        ]);
-
-        if ($validator->fails()){
-            //return response json validate->errors, 200.
-        }
+        return $listUsers;
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $json = $request->input('json', null);
+        $paramsArray = json_decode($json, true);
+        $paramsArray = array_map('trim', $paramsArray);
+
+        if (!empty($paramsArray)) {
+            $validate = Validator::make($paramsArray, [
+                'user' => 'required|max:30|alpha_num',
+                'nombre' => 'required|max:30|alpha',
+                'apellidos' => 'required|max:30|alpha',
+                'email' => 'required|email|unique:usuarios',
+                'password' => 'required',
+                'telefono' => 'required|numeric'
+            ]);
+
+            if ($validate->fails()) {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'El usuario no se ha podido crear',
+                    'errors' => $validate->errors()
+                );
+                return response()->json($data, 200);
+            } else {
+                $pwd = hash('sha256', $paramsArray["password"]);
+                $user = new Usuarios();
+                $user->user = $paramsArray["user"];
+                $user->nombre = $paramsArray["nombre"];
+                $user->apellidos = $paramsArray["apellidos"];
+                $user->email = $paramsArray["email"];
+                $user->password = $pwd;
+                $user->USER_ROLE = 1;
+                $user->telefono = $paramsArray["telefono"];
+                $user->save();
+
+                $data = array(
+                    'status' => 'Success',
+                    'code' => 200,
+                    'message' => 'El usuario se ha creado correctamente!'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero los datos enviados son incorrectos. Vuelve a intentarlo.'
+            );
+            return response()->json($data, 200);
+        }
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
-        return ('Hola');
+        $user = Usuarios::find($id);
+        if ($user) {
+            unset($user->password);
+            $data = array(
+                'status' => 'Success',
+                'code' => 200,
+                'user' => $user
+            );
+            return response()->json($data, 200);
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, no hemos podido encontrar ningun usuario. Vuelve a intentarlo.'
+            );
+            return response()->json($data, 200);
+        }
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $token = $request->header('Authorization');
+        if (!empty($token)) {
+
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+            if ($checkToken) {
+                $json = $request->input('json', null);
+                $paramsArray = json_decode($json, true);
+                $user = $jwtAuth->checkToken($token, true);
+                $userUpdate = Usuarios::find($user->sub);
+
+                if (!empty($userUpdate)) {
+                    $userUpdate->user = $paramsArray["user"];
+                    $userUpdate->nombre = $paramsArray["nombre"];
+                    $userUpdate->apellidos = $paramsArray["apellidos"];
+                    $userUpdate->email = $paramsArray["email"];
+                    $userUpdate->telefono = $paramsArray["telefono"];
+                    $userUpdate->save();
+
+                    $data = array(
+                        'status' => 'Success',
+                        'code' => 200,
+                        'message' => 'El usuario se ha modificado correctamente'
+                    );
+                    return response()->json($data, 200);
+                } else {
+                    $data = array(
+                        'status' => 'Error',
+                        'code' => 404,
+                        'message' => 'Lo sentimos, no hemos podido encontrar el usuario. Vuelve a intentarlo.'
+                    );
+
+                    return response()->json($data, 200);
+                }
+            } else {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Lo sentimos, para hacer esta peticion primero necesitas iniciar sesion.'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $token = $request->header('Authorization');
+        if (!empty($token)) {
+
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+            if ($checkToken) {
+                $json = $request->input('json', null);
+                $user = $jwtAuth->checkToken($token, true);
+
+                $userDelete = Usuarios::Where([
+                    'email' => $user->email,
+                ]);
+
+                if (!empty($userDelete)) {
+                    $userDelete->delete();
+
+                    $data = array(
+                        'status' => 'Succes',
+                        'code' => 200,
+                        'message' => 'El usuario se ha eliminado correctamente'
+                    );
+                    return response()->json($data, 200);
+                } else {
+                    $data = array(
+                        'status' => 'Error',
+                        'code' => 404,
+                        'message' => 'Lo sentimos, no hemos encontrado el usuario que quieres eliminar'
+                    );
+                    return response()->json($data, 200);
+                }
+            }
+
+
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
+    }
+
+    /**
+     * Login into youre account.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function login(Request $request)
+    {
+        $json = $request->input('json', null);
+        $params = json_decode($json);
+        $paramsArray = json_decode($json, true);
+
+        if (!empty($paramsArray)) {
+            $validate = Validator::make($paramsArray, [
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            if ($validate->fails()) {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Login incorrecto. Vuelve a intentarlo.',
+                    'errors' => $validate->errors()
+                );
+                return response()->json($data, 200);
+            } else {
+                $jwtAuth = new \JwtAuth();
+
+                $pwd = hash('sha256', $paramsArray["password"]);
+
+                if (!empty($params->gettoken)) {
+                    $data = $jwtAuth->login($paramsArray["email"], $pwd, true);
+                } else {
+                    $data = $jwtAuth->login($paramsArray["email"], $pwd);
+                }
+            }
+            return response()->json($data, 200);
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero los datos enviados son incorrectos. Vuelve a intentarlo.'
+            );
+            return response()->json($data, 200);
+        }
     }
 }

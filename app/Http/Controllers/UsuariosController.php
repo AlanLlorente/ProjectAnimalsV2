@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Usuarios;
+use Illuminate\Http\Response;
 use \Validator;
 
 class UsuariosController extends Controller
@@ -34,7 +35,7 @@ class UsuariosController extends Controller
 
         if (!empty($paramsArray)) {
             $validate = Validator::make($paramsArray, [
-                'user' => 'required|max:30|alpha_num',
+                'user' => 'required|max:30|alpha_num|unique:usuarios',
                 'nombre' => 'required|max:30|alpha',
                 'apellidos' => 'required|max:30|alpha',
                 'email' => 'required|email|unique:usuarios',
@@ -58,7 +59,6 @@ class UsuariosController extends Controller
                 $user->apellidos = $paramsArray["apellidos"];
                 $user->email = $paramsArray["email"];
                 $user->password = $pwd;
-                $user->USER_ROLE = 1;
                 $user->telefono = $paramsArray["telefono"];
                 $user->save();
 
@@ -192,7 +192,6 @@ class UsuariosController extends Controller
             $jwtAuth = new \JwtAuth();
             $checkToken = $jwtAuth->checkToken($token);
             if ($checkToken) {
-                $json = $request->input('json', null);
                 $user = $jwtAuth->checkToken($token, true);
 
                 $userDelete = Usuarios::Where([
@@ -274,5 +273,112 @@ class UsuariosController extends Controller
             );
             return response()->json($data, 200);
         }
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $token = $request->header('Authorization');
+        if (!empty($token)) {
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+
+            if ($checkToken) {
+                $image = $request->file('file0');
+                $user = $jwtAuth->checkToken($token, true);
+                $userImage = Usuarios::find($user->sub);
+
+                if ($image && $userImage) {
+
+                    $validate = Validator::make($request->all(), [
+                        'file0' => 'required|image|mimes:jpg,jpeg,png,gif'
+                    ]);
+                    if ($validate->fails()) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'La imagen es incorrecta.',
+                            'errors' => $validate->errors()
+                        );
+                        return response()->json($data, 200);
+                    } else {
+                        $imageName = time() . $image->getClientOriginalName();
+                        \Storage::disk('userimages')->put($imageName, \File::get($image));
+                        $userImage->image = $imageName;
+                        $userImage->save();
+                        $data = array(
+                            'status' => 'Succes',
+                            'code' => 200,
+                            'message' => 'Imagen actualizada correctamente.'
+                        );
+                        return response()->json($data, 200);
+                    }
+                } else {
+                    if (empty($image) && !empty($userImage)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'Lo sentimos, pero no hemos encontrado una imagen. Vuelve a intentarlo.'
+                        );
+                        return response()->json($data, 200);
+                    } elseif (!empty($image) && empty($userImage)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'Lo sentimos, pero no hemos encontrado el usuario. Vuelve a intentarlo.'
+                        );
+                        return response()->json($data, 200);
+                    } else {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'Lo sentimos, pero no hemos encontrado ni un usuario ni una imgen. Vuelve a intentarlo.'
+                        );
+                        return response()->json($data, 200);
+                    }
+                }
+            } else {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Lo sentimos, para hacer esta peticion primero necesitas iniciar sesion.'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
+    }
+
+    public function getImage($filename)
+    {
+        $exist = \Storage::disk('userimages')->exists($filename);
+
+        if ($exist){
+            $file = \Storage::disk('userimages')->get($filename);
+            return new Response($file);
+        }else{
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos la imagen no exite'
+            );
+            return response()->json($data, 200);
+        }
+    }
+
+    public function getnames(){
+        $usuarios = Usuarios::all();
+        $names = array();
+
+        foreach ($usuarios as $key => $usuario){
+            array_push($names, $usuario->user);
+        }
+
+        return $names;
     }
 }

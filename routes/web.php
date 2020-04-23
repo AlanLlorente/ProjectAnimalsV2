@@ -27,19 +27,25 @@ Route::POST('users/login', 'UsuariosController@login')->name('usuarios.login');
 Route::POST('users/image', 'UsuariosController@uploadImage')->name('usuarios.photo');
 //Mostrar imagen de perfil
 Route::GET('users/getimage/{filename}', 'UsuariosController@getImage')->name('usuarios.getImage');
+//listar todos los nombres de usuarios
+Route::GET('users/list/users', 'UsuariosController@getnames')->name('usuarios.listnames');
 
 //listamos tooodas las adopciones
 Route::GET('adp', 'AdopcionesController@index')->name('adp.listall');
 //Crear una adopcion
-Route::POST('adp', 'AdopcionesController@create')->name('adp.create');
+Route::POST('adp', 'AdopcionesController@store')->name('adp.create');
 //Modificar una adopcion
 Route::PUT('adp', 'AdopcionesController@update')->name('adp.listar');
 //Borrar una adopcion
-Route::DELETE('adp/{id}', 'AdopcionesController@destroy')->name('adp.destroy');
+Route::DELETE('adp', 'AdopcionesController@destroy')->name('adp.destroy');
 //Mostrar un registro
 Route::GET('adp/{id}', 'AdopcionesController@show')->name('adp.show');
 //listar numero de registros
-Route::GET('/adp/list', 'AdopcionesController@listadp')->name('adp.count');
+Route::GET('count/adp', 'AdopcionesController@countadp')->name('adp.count');
 //Adoptar algo
 Route::POST('adp/new', 'AdopcionesController@newadp')->name('adp.adp');
+//listar todos los animales NO adoptados
+Route::GET('noadp/adp', 'AdopcionesController@noadp')->name('adp.noadp');
+//listar todos los animales PENDIENTES de adoptar
+Route::GET('yadp/adp', 'AdopcionesController@adped')->name('adp.adped');
 

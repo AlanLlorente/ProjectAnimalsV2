@@ -13,11 +13,11 @@ class CreateAdopcionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('adopciones', function (Blueprint $table) {
+        Schema::create('adopcions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('usuarios_id');
             $table->string('tipo');
-            $table->integer('edad');
+            $table->string('edad');
             $table->string('raza');
             $table->string('cuidad');
             $table->string('provincia');
@@ -28,7 +28,6 @@ class CreateAdopcionsTable extends Migration
             $table->string('image_3')->nullable()->default(null);
             $table->boolean('archived')->default(0);
             $table->timestamps();
-
 
             $table->foreign('usuarios_id')
                 ->references('id')

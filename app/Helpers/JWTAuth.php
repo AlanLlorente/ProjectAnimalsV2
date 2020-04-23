@@ -29,7 +29,6 @@ class JwtAuth
         if (is_object($user)) {
             $login = true;
         }
-
         if ($login) {
             $token = array(
                 'sub' => $user->id,

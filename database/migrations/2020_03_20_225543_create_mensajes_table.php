@@ -15,12 +15,21 @@ class CreateMensajesTable extends Migration
     {
         Schema::create('mensajes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('from_users_id');
-            $table->string('to_users_id');
+            $table->unsignedBigInteger('from_users_id');
+            $table->unsignedBigInteger('to_users_id');
             $table->string('titulo');
             $table->multiLineString('contenido');
-            $table->boolean('leido');
+            $table->boolean('leido')->default(0);
             $table->timestamps();
+
+
+            $table->foreign('from_users_id')
+                ->references('id')
+                ->on('usuarios');
+
+            $table->foreign('to_users_id')
+                ->references('id')
+                ->on('usuarios');
         });
     }
 

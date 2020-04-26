@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Usuarios extends Model
 {
-    //Conseguir todos los anuncios creados
+    //Conseguir todas las adopciones creadas
     public function adopciones()
     {
         return $this->hasMany('App\Adopcion');

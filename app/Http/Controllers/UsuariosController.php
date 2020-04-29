@@ -36,8 +36,8 @@ class UsuariosController extends Controller
         if (!empty($paramsArray)) {
             $validate = Validator::make($paramsArray, [
                 'user' => 'required|max:30|alpha_num|unique:usuarios',
-                'nombre' => 'required|max:30|alpha',
-                'apellidos' => 'required|max:30|alpha',
+                'nombre' => 'required|max:30|string',
+                'apellidos' => 'required|max:30|string',
                 'email' => 'required|email|unique:usuarios',
                 'password' => 'required',
                 'telefono' => 'required|numeric'

@@ -4,17 +4,50 @@ namespace App\Http\Controllers;
 
 use http\Env\Response;
 use Illuminate\Http\Request;
+use App\Mensajes;
 
 class MensajesController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $token = $request->header('Authorization');
+        if (!empty($token)) {
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+            if ($checkToken) {
+                $user = $jwtAuth->checkToken($token, true);
+                $msj = Mensajes::Where([
+                    'to_users_id' => $user->sub
+                ])->get();
+
+                $data = array(
+                    'msj' => $msj
+                );
+
+                return \response()->json($data, 200);
+
+            } else {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Lo sentimos, para hacer esta peticion primero necesitas iniciar sesion.'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
     }
 
     /**
@@ -31,18 +64,97 @@ class MensajesController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $token = $request->header('Authorization');
+
+        if (!empty($token)) {
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+            if ($checkToken) {
+                $json = $request->input('json', null);
+                $paramsArray = json_decode($json, true);
+                $user = $jwtAuth->checkToken($token, true);
+
+                if (!empty($paramsArray) && !empty($user)) {
+                    $validate = \Validator::make($paramsArray, [
+                        'to_users_id' => 'required',
+                        'titulo' => 'required',
+                        'contenido' => 'required'
+                    ]);
+                    if ($validate->fails()) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'Lo sentimos, no hemos podido enviar el mensaje.',
+                            'errors' => $validate->errors()
+                        );
+                        return response()->json($data, 200);
+                    } else {
+                        $msj = new Mensajes();
+                        $msj->from_users_id = $user->sub;
+                        $msj->to_users_id = $paramsArray["to_users_id"];
+                        $msj->titulo = $paramsArray["titulo"];
+                        $msj->contenido = $paramsArray["contenido"];
+
+                        $msj->save();
+
+                        $data = array(
+                            'status' => 'Success',
+                            'code' => 200,
+                            'message' => 'Mensaje enviado.'
+                        );
+                        return \response()->json($data, 200);
+                    }
+                } else {
+                    if (empty($paramsArray)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'Lo sentimos, pero los datos enviados son incorrectos. Vuelve a intentarlo.'
+                        );
+                        return response()->json($data, 200);
+                    } elseif (empty($user)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'Lo sentimos, pero no hemos encontrado tu usuario. Vuelve a intentarlo.'
+                        );
+                        return response()->json($data, 200);
+                    } else {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'Lo sentimos pero no hemos encontrado ni tu usuario ni nos han llegado mas datos. Vuelve a intetarlo'
+                        );
+                        return response()->json($data, 200);
+                    }
+                }
+            } else {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Lo sentimos, para hacer esta peticion primero necesitas iniciar sesion.'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -53,7 +165,7 @@ class MensajesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -64,8 +176,8 @@ class MensajesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -76,7 +188,7 @@ class MensajesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

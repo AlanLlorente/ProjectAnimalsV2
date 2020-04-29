@@ -49,3 +49,12 @@ Route::GET('noadp/adp', 'AdopcionesController@noadp')->name('adp.noadp');
 //listar todos los animales PENDIENTES de adoptar
 Route::GET('yadp/adp', 'AdopcionesController@adped')->name('adp.adped');
 
+//enviar un mensaje
+Route::POST('msj', 'MensajesController@store')->name('msj.new');
+//recoger todos los mensajes que tenga
+Route::GET('msj/user', 'MensajesController@index')->name('msj.get');
+//marcar un mensaje como leido
+Route::PUT('mjs/read', 'AdopcionesController@rmsj')->name('adp.adped');
+//borrar un mensaje
+Route::PUT('msj', 'AdopcionesController@adped')->name('adp.adped');
+//Mostrar un solo mensaje?

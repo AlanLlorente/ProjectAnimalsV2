@@ -17,9 +17,10 @@ class CreateMensajesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('from_users_id');
             $table->unsignedBigInteger('to_users_id');
-            $table->string('titulo');
-            $table->multiLineString('contenido');
+            $table->mediumText('titulo');
+            $table->longText('contenido');
             $table->boolean('leido')->default(0);
+            $table->boolean('borrar')->default(0);
             $table->timestamps();
 
 

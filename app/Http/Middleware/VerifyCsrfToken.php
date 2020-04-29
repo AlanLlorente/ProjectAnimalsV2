@@ -23,5 +23,7 @@ class VerifyCsrfToken extends Middleware
         'users/*',
         'adp',
         'adp/*',
+        'msj',
+        'msj/*'
     ];
 }

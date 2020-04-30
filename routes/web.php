@@ -53,8 +53,7 @@ Route::GET('yadp/adp', 'AdopcionesController@adped')->name('adp.adped');
 Route::POST('msj', 'MensajesController@store')->name('msj.new');
 //recoger todos los mensajes que tenga
 Route::GET('msj/user', 'MensajesController@index')->name('msj.get');
-//marcar un mensaje como leido
-Route::PUT('mjs/read', 'AdopcionesController@rmsj')->name('adp.adped');
 //borrar un mensaje
 Route::PUT('msj', 'AdopcionesController@adped')->name('adp.adped');
-//Mostrar un solo mensaje?
+//Mostrar un solo mensaje
+Route::GET('msj/{id}', 'Mensajescontroller@show')->name('adp.leer');

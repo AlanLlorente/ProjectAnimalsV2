@@ -22,6 +22,7 @@ class VerifyCsrfToken extends Middleware
         'users',
         'users/*',
         'adp',
+        '/adp',
         'adp/*',
         'msj',
         'msj/*'

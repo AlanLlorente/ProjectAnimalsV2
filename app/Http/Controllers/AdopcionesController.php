@@ -55,12 +55,14 @@ class AdopcionesController extends Controller
 
                 if (!empty($paramsArray) && !empty($user)) {
                     $validate = Validator::make($paramsArray, [
-                        'tipo' => 'required|max:30|alpha_num',
+                        'tipo' => 'required|max:30|string',
                         'edad' => 'required|max:30',
-                        'raza' => 'required|max:30|alpha_num',
-                        'ciudad' => 'required|max:30|alpha_num',
-                        'provincia' => 'required|max:30|alpha_num',
+                        'raza' => 'required|max:30|string',
+                        'ciudad' => 'required|max:30|string',
+                        'provincia' => 'required|max:30|string',
                         'detalles' => 'required|max:200',
+                        'nombre' => 'required|max:30|string',
+                        'sexo' => 'required|max:30|string',
                     ]);
                     if ($validate->fails()) {
                         $data = array(
@@ -104,6 +106,8 @@ class AdopcionesController extends Controller
                         $adp->tipo = $paramsArray["tipo"];
                         $adp->edad = $paramsArray["edad"];
                         $adp->raza = $paramsArray["raza"];
+                        $adp->sexo = $paramsArray["sexo"];
+                        $adp->nombre = $paramsArray["nombre"];
                         $adp->cuidad = $paramsArray["ciudad"];
                         $adp->provincia = $paramsArray["provincia"];
                         $adp->detalles = $paramsArray["detalles"];
@@ -313,6 +317,8 @@ class AdopcionesController extends Controller
                         'ciudad' => 'required|max:30|alpha_num',
                         'provincia' => 'required|max:30|alpha_num',
                         'detalles' => 'required|max:200',
+                        'nombre' => 'required|max:30|string',
+                        'sexo' => 'required|max:30|string',
                     ]);
                     if ($validate->fails()) {
                         $data = array(
@@ -356,6 +362,8 @@ class AdopcionesController extends Controller
                                 $adp->tipo = $paramsArray["tipo"];
                                 $adp->edad = $paramsArray["edad"];
                                 $adp->raza = $paramsArray["raza"];
+                                $adp->sexo = $paramsArray["sexo"];
+                                $adp->nombre = $paramsArray["nombre"];
                                 $adp->cuidad = $paramsArray["cuidad"];
                                 $adp->provincia = $paramsArray["provincia"];
                                 $adp->detalles = $paramsArray["detalles"];

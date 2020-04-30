@@ -21,6 +21,8 @@ class CreateAdopcionsTable extends Migration
             $table->string('raza');
             $table->string('cuidad');
             $table->string('provincia');
+            $table->string('nombre');
+            $table->string('sexo');
             $table->string('detalles');
             $table->unsignedBigInteger('adoptedby_id')->nullable()->default(null);
             $table->string('image_1')->nullable()->default(null);

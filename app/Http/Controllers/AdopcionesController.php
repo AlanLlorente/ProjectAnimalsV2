@@ -58,7 +58,7 @@ class AdopcionesController extends Controller
                         'tipo' => 'required|max:30|alpha_num',
                         'edad' => 'required|max:30',
                         'raza' => 'required|max:30|alpha_num',
-                        'cuidad' => 'required|max:30|alpha_num',
+                        'ciudad' => 'required|max:30|alpha_num',
                         'provincia' => 'required|max:30|alpha_num',
                         'detalles' => 'required|max:200',
                     ]);
@@ -104,7 +104,7 @@ class AdopcionesController extends Controller
                         $adp->tipo = $paramsArray["tipo"];
                         $adp->edad = $paramsArray["edad"];
                         $adp->raza = $paramsArray["raza"];
-                        $adp->cuidad = $paramsArray["cuidad"];
+                        $adp->cuidad = $paramsArray["ciudad"];
                         $adp->provincia = $paramsArray["provincia"];
                         $adp->detalles = $paramsArray["detalles"];
                         $adp->save();
@@ -310,7 +310,7 @@ class AdopcionesController extends Controller
                         'tipo' => 'required|max:30|alpha_num',
                         'edad' => 'required|max:30',
                         'raza' => 'required|max:30|alpha_num',
-                        'cuidad' => 'required|max:30|alpha_num',
+                        'ciudad' => 'required|max:30|alpha_num',
                         'provincia' => 'required|max:30|alpha_num',
                         'detalles' => 'required|max:200',
                     ]);

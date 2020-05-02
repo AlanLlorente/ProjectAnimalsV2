@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Usuarios;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Mensajes;
@@ -27,6 +28,8 @@ class MensajesController extends Controller
                 ])->get();
 
                 $data = array(
+                    'statuss' => 'Success',
+                    'code' => 200,
                     'msj' => $msj
                 );
 
@@ -58,7 +61,6 @@ class MensajesController extends Controller
      */
     public function create(Request $request)
     {
-        $request->get('nombre');
     }
 
     /**
@@ -155,11 +157,76 @@ class MensajesController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
+        $token = $request->header('Authorization');
+
+        if (!empty($token)) {
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+            if ($checkToken) {
+                $user = $jwtAuth->checkToken($token, true);
+                $msj = Mensajes::find($id);
+                if (!empty($user) && !empty($msj)) {
+                    if ($user->sub == $msj->to_users_id) {
+                        $msj->leido = 1;
+                        $msj->save();
+                        $data = array(
+                            'status' => 'Success',
+                            'code' => 200,
+                            'msj' => $msj
+                        );
+                        return \response()->json($data, 200);
+                    } else {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'El mensaje al que estas intentando acceder no es tuyo, lo sentimos.'
+                        );
+                        return \response()->json($data, 200);
+                    }
+                } else {
+                    if (empty($user)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un usuario, vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    } elseif (empty($msj)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un mensaje, vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    } else {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un mensaje ni un usuario. Vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    }
+                }
+            } else {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Lo sentimos, para hacer esta peticion primero necesitas iniciar sesion.'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
     }
 
     /**
@@ -189,10 +256,75 @@ class MensajesController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        $token = $request->header('Authorization');
+
+        if (!empty($token)) {
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+            if ($checkToken) {
+                $user = $jwtAuth->checkToken($token, true);
+                $msj = Mensajes::find($id);
+                if (!empty($user) && !empty($msj)) {
+                    if ($user->sub == $msj->to_users_id) {
+                        $msj->leido = 1;
+                        $msj->save();
+                        $data = array(
+                            'status' => 'Success',
+                            'code' => 200,
+                            'msj' => $msj
+                        );
+                        return \response()->json($data, 200);
+                    } else {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'El mensaje al que estas intentando acceder no es tuyo, lo sentimos.'
+                        );
+                        return \response()->json($data, 200);
+                    }
+                } else {
+                    if (empty($user)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un usuario, vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    } elseif (empty($msj)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un mensaje, vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    } else {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un mensaje ni un usuario. Vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    }
+                }
+            } else {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Lo sentimos, para hacer esta peticion primero necesitas iniciar sesion.'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
     }
 }

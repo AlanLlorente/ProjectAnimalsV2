@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use http\Client\Response;
 use Illuminate\Http\Request;
 use App\Usuarios;
 use App\Adopcion;
 use mysql_xdevapi\Exception;
 use \Validator;
 use function foo\func;
+
 
 class AdopcionesController extends Controller
 {
@@ -48,9 +50,6 @@ class AdopcionesController extends Controller
             if ($checkToken) {
                 $json = $request->input('json', null);
                 $paramsArray = json_decode($json, true);
-                $image1 = $request->file('file0');
-                $image2 = $request->file('file1');
-                $image3 = $request->file('file2');
                 $user = $jwtAuth->checkToken($token, true);
 
                 if (!empty($paramsArray) && !empty($user)) {
@@ -71,36 +70,7 @@ class AdopcionesController extends Controller
                             'message' => $validate->errors(),
                         );
                         return response()->json($data, 200);
-                    }
-
-                    $validate = Validator::make($request->all(), [
-                        'file0' => 'image|mimes:jpg,jpeg,png,gif',
-                        'file1' => 'image|mimes:jpg,jpeg,png,gif',
-                        'file2' => 'image|mimes:jpg,jpeg,png,gif',
-                    ]);
-
-                    if ($validate->fails()) {
-                        $data = array(
-                            'status' => 'Error',
-                            'code' => 404,
-                            'message' => 'La imagen es incorrecta.',
-                            'errors' => $validate->errors()
-                        );
-                        return response()->json($data, 200);
                     } else {
-                        $images = array(
-                            'image1' => $image1,
-                            'image' => $image2,
-                            'image' => $image3
-                        );
-                        foreach ($images as $key => $image) {
-                            if ($image != null) {
-                                $imageName = time() . $image->getClientOriginalName();
-                                \Storage::disk('userimages')->put($imageName, \File::get($image));
-                                $adp->image_ . [$key] = $imageName;
-                            }
-                        }
-
                         $adp = new Adopcion();
                         $adp->usuarios_id = $user->sub;
                         $adp->tipo = $paramsArray["tipo"];
@@ -113,11 +83,11 @@ class AdopcionesController extends Controller
                         $adp->detalles = $paramsArray["detalles"];
                         $adp->save();
 
-
                         $data = array(
                             'status' => 'Success',
                             'code' => 200,
-                            'message' => 'Adopcion creada.'
+                            'message' => 'Adopcion creada.',
+                            'adp' => $adp
                         );
                         return response()->json($data, 200);
                     }
@@ -543,6 +513,109 @@ class AdopcionesController extends Controller
                 'status' => 'Error',
                 'code' => 400,
                 'message' => 'No hemos encontrado nada, lo sentimos.'
+            );
+            return response()->json($data, 200);
+        }
+    }
+
+    public function images(Request $request, $id)
+    {
+        $token = $request->header('Authorization');
+        if (!empty($token)) {
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+            if ($checkToken) {
+                $image1 = $request->file('file0');
+                $image2 = $request->file('file1');
+                $image3 = $request->file('file2');
+                $user = $jwtAuth->checkToken($token, true);
+                $adp = Adopcion::find($id);
+                if (!empty($user) && !empty($adp)) {
+                    if ($user->sub == $adp->usuarios_id) {
+                        $validate = Validator::make($request->all(), [
+                            'file0' => 'image|mimes:jpg,jpeg,png,gif',
+                            'file1' => 'image|mimes:jpg,jpeg,png,gif',
+                            'file2' => 'image|mimes:jpg,jpeg,png,gif'
+                        ]);
+                        if ($validate->fails()) {
+                            $data = array(
+                                'status' => 'Error',
+                                'code' => 404,
+                                'message' => 'La imagen es incorrecta.',
+                                'errors' => $validate->errors()
+                            );
+                            return response()->json($data, 200);
+                        } else {
+                            if ($image1 != null) {
+                                $imageName = time() . $image1->getClientOriginalName();
+                                \Storage::disk('adpimages')->put($imageName, \File::get($image1));
+                                $adp->image_1 = $imageName;
+                            }
+                            if ($image2 != null) {
+                                $imageName = time() . $image2->getClientOriginalName();
+                                \Storage::disk('adpimages')->put($imageName, \File::get($image2));
+                                $adp->image_2 = $imageName;
+                            }
+                            if ($image3 != null) {
+                                $imageName = time() . $image3->getClientOriginalName();
+                                \Storage::disk('adpimages')->put($imageName, \File::get($image3));
+                                $adp->image_3 = $imageName;
+                            }
+                            $adp->save();
+                            $data = array(
+                                'status' => 'Success',
+                                'code' => 200,
+                                'message' => 'Tus imagenes se han guardado correctamente.',
+                            );
+                            return response()->json($data, 200);
+
+                        }
+                    } else {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'Lo sentimos, pero lo que estas intentando modificar no es tuyo.'
+                        );
+                        return response()->json($data, 200);
+                    }
+                } else {
+                    $data = array(
+                        'status' => 'Error',
+                        'code' => 404,
+                        'message' => 'No hemos encontrado una adopcion o usuario. Vuelve a intentarlo.'
+                    );
+                    return response()->json($data, 200);
+                }
+            } else {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Lo sentimos, para hacer esta peticion primero necesitas iniciar sesion.'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
+    }
+
+    public function getadpimages($filename)
+    {
+        $exist = \Storage::disk('adpimages')->exists($filename);
+
+        if ($exist) {
+            $file = \Storage::disk('adpimages')->get($filename);
+            return \Response($file);
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos la imagen no exite'
             );
             return response()->json($data, 200);
         }

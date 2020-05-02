@@ -48,6 +48,10 @@ Route::POST('adp/new', 'AdopcionesController@newadp')->name('adp.adp');
 Route::GET('noadp/adp', 'AdopcionesController@noadp')->name('adp.noadp');
 //listar todos los animales PENDIENTES de adoptar
 Route::GET('yadp/adp', 'AdopcionesController@adped')->name('adp.adped');
+//subir imagenes
+Route::POST('adp/new/img/{id}', 'AdopcionesController@images')->name('ado.images');
+//get de las imagenes
+Route::GET('adp/img/{filename}', 'AdopcionesController@getadpimages')->name('adp.getimages');
 
 //enviar un mensaje
 Route::POST('msj', 'MensajesController@store')->name('msj.new');

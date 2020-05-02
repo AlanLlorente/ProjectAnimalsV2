@@ -25,6 +25,8 @@ class VerifyCsrfToken extends Middleware
         '/adp',
         'adp/*',
         'msj',
-        'msj/*'
+        'msj/*',
+        'img',
+        'img/*'
     ];
 }

@@ -270,7 +270,7 @@ class MensajesController extends Controller
                 $msj = Mensajes::find($id);
                 if (!empty($user) && !empty($msj)) {
                     if ($user->sub == $msj->to_users_id) {
-                        $msj->leido = 1;
+                        $msj->borrar = 0;
                         $msj->save();
                         $data = array(
                             'status' => 'Success',

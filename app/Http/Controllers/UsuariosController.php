@@ -258,10 +258,21 @@ class UsuariosController extends Controller
 
                 $pwd = hash('sha256', $paramsArray["password"]);
 
+                $user = Usuarios::Where([
+                    'email' => $paramsArray["email"]
+                ])->first();
+                unset($user->password);
+                unset($user->USER_ROLE);
                 if (!empty($params->gettoken)) {
-                    $data = $jwtAuth->login($paramsArray["email"], $pwd, true);
+                    $data = array(
+                        'token' => $jwtAuth->login($paramsArray["email"], $pwd, true),
+                        'user' => $user
+                    );
                 } else {
-                    $data = $jwtAuth->login($paramsArray["email"], $pwd);
+                    $data = array(
+                        'token' => $data = $jwtAuth->login($paramsArray["email"], $pwd),
+                        'user' => $user
+                    );
                 }
             }
             return response()->json($data, 200);
@@ -358,10 +369,10 @@ class UsuariosController extends Controller
     {
         $exist = \Storage::disk('userimages')->exists($filename);
 
-        if ($exist){
+        if ($exist) {
             $file = \Storage::disk('userimages')->get($filename);
             return new Response($file);
-        }else{
+        } else {
             $data = array(
                 'status' => 'Error',
                 'code' => 404,
@@ -371,11 +382,12 @@ class UsuariosController extends Controller
         }
     }
 
-    public function getnames(){
+    public function getnames()
+    {
         $usuarios = Usuarios::all();
         $names = array();
 
-        foreach ($usuarios as $key => $usuario){
+        foreach ($usuarios as $key => $usuario) {
             array_push($names, $usuario->user);
         }
 

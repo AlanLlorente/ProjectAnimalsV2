@@ -520,6 +520,7 @@ class AdopcionesController extends Controller
 
     public function images(Request $request, $id)
     {
+       
         $token = $request->header('Authorization');
         if (!empty($token)) {
             $jwtAuth = new \JwtAuth();
@@ -530,6 +531,7 @@ class AdopcionesController extends Controller
                 $image3 = $request->file('file2');
                 $user = $jwtAuth->checkToken($token, true);
                 $adp = Adopcion::find($id);
+                
                 if (!empty($user) && !empty($adp)) {
                     if ($user->sub == $adp->usuarios_id) {
                         $validate = Validator::make($request->all(), [

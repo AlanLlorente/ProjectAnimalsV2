@@ -520,7 +520,7 @@ class AdopcionesController extends Controller
 
     public function images(Request $request, $id)
     {
-       
+
         $token = $request->header('Authorization');
         if (!empty($token)) {
             $jwtAuth = new \JwtAuth();
@@ -531,7 +531,7 @@ class AdopcionesController extends Controller
                 $image3 = $request->file('file2');
                 $user = $jwtAuth->checkToken($token, true);
                 $adp = Adopcion::find($id);
-                
+
                 if (!empty($user) && !empty($adp)) {
                     if ($user->sub == $adp->usuarios_id) {
                         $validate = Validator::make($request->all(), [
@@ -620,6 +620,33 @@ class AdopcionesController extends Controller
                 'message' => 'Lo sentimos la imagen no exite'
             );
             return response()->json($data, 200);
+        }
+    }
+
+    public function filter(Request $request)
+    {
+        $json = $request->input('json', null);
+        $paramsArray = json_decode($json, true);
+
+        $adps = Adopcion::where([
+            'cuidad' => $paramsArray["comunidad"]
+        ]);
+
+        if (!empty($adps)) {
+            $data = array(
+                'status' => 'Succes',
+                'code' => 200,
+                'adp' => $adps
+            );
+            return \response()->json($data, 200);
+        } else {
+            $data = array(
+                'status' => 'Success',
+                'code' => 200,
+                'vacio' => 1,
+                'adp' => 'Lo sentimos, no hemos encontrado ninguna adopcion que mostrar.'
+            );
+            return \response()->json($data, 200);
         }
     }
 }

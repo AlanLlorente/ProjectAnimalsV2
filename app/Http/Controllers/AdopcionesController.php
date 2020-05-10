@@ -72,7 +72,7 @@ class AdopcionesController extends Controller
                         return response()->json($data, 200);
                     } else {
                         $adp = new Adopcion();
-                        $adp->usuarios_id = $user->sub;
+                        $adp->usuarios_id = $user->user;
                         $adp->tipo = $paramsArray["tipo"];
                         $adp->edad = $paramsArray["edad"];
                         $adp->raza = $paramsArray["raza"];
@@ -533,7 +533,7 @@ class AdopcionesController extends Controller
                 $adp = Adopcion::find($id);
 
                 if (!empty($user) && !empty($adp)) {
-                    if ($user->sub == $adp->usuarios_id) {
+                    if ($user->user == $adp->usuarios_id) {
                         $validate = Validator::make($request->all(), [
                             'file0' => 'image|mimes:jpg,jpeg,png,gif',
                             'file1' => 'image|mimes:jpg,jpeg,png,gif',

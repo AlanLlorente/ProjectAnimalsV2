@@ -72,7 +72,7 @@ class AdopcionesController extends Controller
                         return response()->json($data, 200);
                     } else {
                         $adp = new Adopcion();
-                        $adp->usuarios_id = $user->sub;
+                        $adp->usuarios_id = $user->user;
                         $adp->tipo = $paramsArray["tipo"];
                         $adp->edad = $paramsArray["edad"];
                         $adp->raza = $paramsArray["raza"];

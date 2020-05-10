@@ -52,6 +52,8 @@ Route::GET('yadp/adp', 'AdopcionesController@adped')->name('adp.adped');
 Route::POST('adp/new/img/{id}', 'AdopcionesController@images')->name('ado.images');
 //get de las imagenes
 Route::GET('adp/img/{filename}', 'AdopcionesController@getadpimages')->name('adp.getimages');
+//filtros
+Route::GET('filter/adp', 'AdopcionesController@filter')->name('filter.adp');
 
 //enviar un mensaje
 Route::POST('msj', 'MensajesController@store')->name('msj.new');

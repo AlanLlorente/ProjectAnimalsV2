@@ -24,7 +24,7 @@ class MensajesController extends Controller
             if ($checkToken) {
                 $user = $jwtAuth->checkToken($token, true);
                 $msj = Mensajes::Where([
-                    'to_users_id' => $user->sub,
+                    'to_users_id' => $user->user,
                     'borrar' => 0
                 ])->get();
 

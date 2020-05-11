@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f21081d4-5857-4d0a-abb0-f843ec4c94ef" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Adopcion.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Adopcion.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AdopcionesController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AdopcionesController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MensajesController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MensajesController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/UsuariosController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/UsuariosController.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,6 +148,10 @@
       <workItem from="1588778970655" duration="3777000" />
       <workItem from="1588860773908" duration="309000" />
       <workItem from="1588865630627" duration="182000" />
+      <workItem from="1588919814778" duration="117000" />
+      <workItem from="1589100651310" duration="7145000" />
+      <workItem from="1589179121352" duration="49000" />
+      <workItem from="1589214514581" duration="1074000" />
     </task>
     <servers />
   </component>
@@ -157,20 +159,20 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="935" y="322" key="FileChooserDialogImpl" timestamp="1588865677875">
+    <state x="935" y="322" key="FileChooserDialogImpl" timestamp="1589179169036">
       <screen x="62" y="0" width="2498" height="1080" />
     </state>
     <state x="3209" y="322" key="FileChooserDialogImpl/62.0.2498.1080/2560.0.1858.1080@2560.0.1858.1080" timestamp="1588516848702" />
-    <state x="935" y="322" key="FileChooserDialogImpl/62.0.2498.1080/2560.0.1858.1080@62.0.2498.1080" timestamp="1588865677875" />
-    <state x="659" y="423" key="com.intellij.ide.util.TipDialog" timestamp="1588860774660">
-      <screen x="62" y="0" width="2498" height="1080" />
+    <state x="935" y="322" key="FileChooserDialogImpl/62.0.2498.1080/2560.0.1858.1080@62.0.2498.1080" timestamp="1589179169036" />
+    <state x="3252" y="433" key="com.intellij.ide.util.TipDialog" timestamp="1589214523283">
+      <screen x="2560" y="0" width="1858" height="1080" />
     </state>
     <state x="506" y="423" key="com.intellij.ide.util.TipDialog/62.0.1858.1080@62.0.1858.1080" timestamp="1585151096758" />
-    <state x="659" y="423" key="com.intellij.ide.util.TipDialog/62.0.2498.1080/2560.0.1858.1080@62.0.2498.1080" timestamp="1588860774660" />
-    <state x="777" y="267" width="904" height="678" key="search.everywhere.popup" timestamp="1588865698378">
+    <state x="3252" y="433" key="com.intellij.ide.util.TipDialog/62.0.2498.1080/2560.0.1858.1080@62.0.2498.1080" timestamp="1589214523283" />
+    <state x="1315" y="165" width="904" height="678" key="search.everywhere.popup" timestamp="1589216250377">
       <screen x="62" y="0" width="2498" height="1080" />
     </state>
-    <state x="3092" y="267" width="672" height="678" key="search.everywhere.popup/62.0.2498.1080/2560.0.1858.1080@2560.0.1858.1080" timestamp="1588712962042" />
-    <state x="777" y="267" width="904" height="678" key="search.everywhere.popup/62.0.2498.1080/2560.0.1858.1080@62.0.2498.1080" timestamp="1588865698378" />
+    <state x="3092" y="267" width="672" height="678" key="search.everywhere.popup/62.0.2498.1080/2560.0.1858.1080@2560.0.1858.1080" timestamp="1589108251269" />
+    <state x="1315" y="165" width="904" height="678" key="search.everywhere.popup/62.0.2498.1080/2560.0.1858.1080@62.0.2498.1080" timestamp="1589216250377" />
   </component>
 </project>

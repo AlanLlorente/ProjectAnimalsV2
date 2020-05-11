@@ -138,7 +138,6 @@ class UsuariosController extends Controller
                 $userUpdate = Usuarios::find($user->sub);
 
                 if (!empty($userUpdate)) {
-                    $userUpdate->user = $paramsArray["user"];
                     $userUpdate->nombre = $paramsArray["nombre"];
                     $userUpdate->apellidos = $paramsArray["apellidos"];
                     $userUpdate->email = $paramsArray["email"];

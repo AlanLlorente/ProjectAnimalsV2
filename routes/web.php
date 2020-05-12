@@ -60,6 +60,6 @@ Route::POST('msj', 'MensajesController@store')->name('msj.new');
 //recoger todos los mensajes que tenga
 Route::GET('msj/user', 'MensajesController@index')->name('msj.get');
 //borrar un mensaje
-Route::PUT('msj/delete/{id}', 'AdopcionesController@update')->name('adp.adped');
+Route::PUT('msj/delete/{id}', 'MensajesController@update')->name('adp.adped');
 //Mostrar un solo mensaje
 Route::GET('msj/{id}', 'Mensajescontroller@show')->name('adp.leer');

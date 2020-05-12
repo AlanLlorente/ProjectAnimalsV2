@@ -173,7 +173,7 @@ class AdopcionesController extends Controller
                     $adp = Adopcion::find($paramsArray["adpid"]);
                     $ownerAdp = Usuarios::find($user->sub);
                     if ($adp && $ownerAdp) {
-                        if ($adp->usuarios_id == $ownerAdp->id) {
+                        if ($adp->usuarios_id == $ownerAdp->user) {
                             $adp->adoptedby_id = $paramsArray["adp_usr_id"];
                             $adp->archived = 1;
                             $adp->save();

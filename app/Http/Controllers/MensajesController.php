@@ -171,7 +171,7 @@ class MensajesController extends Controller
                 $user = $jwtAuth->checkToken($token, true);
                 $msj = Mensajes::find($id);
                 if (!empty($user) && !empty($msj)) {
-                    if ($user->sub == $msj->to_users_id) {
+                    if ($user->user == $msj->to_users_id) {
                         $msj->leido = 1;
                         $msj->save();
                         $data = array(

@@ -251,7 +251,7 @@ class MensajesController extends Controller
     public function update(Request $request, $id)
     {
         $token = $request->header('Authorization');
-
+        
         if (!empty($token)) {
             $jwtAuth = new \JwtAuth();
             $checkToken = $jwtAuth->checkToken($token);
@@ -260,6 +260,7 @@ class MensajesController extends Controller
                 $msj = Mensajes::find($id);
                 if (!empty($user) && !empty($msj)) {
                     $msj->borrar = 1;
+                    $msj->save();
                     $data = array(
                         'status' => 'Succes',
                         'code' => 200,

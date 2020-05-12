@@ -246,11 +246,66 @@ class MensajesController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        $token = $request->header('Authorization');
+
+        if (!empty($token)) {
+            $jwtAuth = new \JwtAuth();
+            $checkToken = $jwtAuth->checkToken($token);
+            if ($checkToken) {
+                $user = $jwtAuth->checkToken($token, true);
+                $msj = Mensajes::find($id);
+                if (!empty($user) && !empty($msj)) {
+                    $msj->borrar = 1;
+                    $data = array(
+                        'status' => 'Succes',
+                        'code' => 200,
+                        'message' => 'Mensaje borrado correctamente.'
+                    );
+                    return \response()->json($data, 200);
+                } else {
+                    if (empty($user)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un usuario, vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    } elseif (empty($msj)) {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un mensaje, vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    } else {
+                        $data = array(
+                            'status' => 'Error',
+                            'code' => 404,
+                            'message' => 'No hemos encontrado un mensaje ni un usuario. Vuelve a intentarlo.'
+                        );
+                        return \response()->json($data, 200);
+                    }
+                }
+            } else {
+                $data = array(
+                    'status' => 'Error',
+                    'code' => 404,
+                    'message' => 'Lo sentimos, para hacer esta peticion primero necesitas iniciar sesion.'
+                );
+                return response()->json($data, 200);
+            }
+        } else {
+            $data = array(
+                'status' => 'Error',
+                'code' => 404,
+                'message' => 'Lo sentimos, pero no has incluido la cabecera de autorizacion, introducela por favor.'
+            );
+            return response()->json($data, 200);
+        }
     }
 
     /**
